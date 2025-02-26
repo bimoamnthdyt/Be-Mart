@@ -48,7 +48,7 @@ function ProductList() {
         + Tambah
       </button>
 
-      {/* ✅ Modal Form untuk Tambah/Edit Produk */}
+      {/* Modal Form untuk Tambah/Edit Produk */}
       <ProductForm
         isOpen={modalOpen}
         closeModal={() => setModalOpen(false)}
@@ -56,7 +56,7 @@ function ProductList() {
         editProduct={editProduct} // Kirim data produk yang akan diedit
       />
 
-      {/* ✅ List Produk */}
+      {/* List Produk */}
       <div className="grid grid-cols-3 gap-4">
         {products.map((product) => (
           <div key={product._id} className="p-4 bg-white shadow-lg rounded-lg">
@@ -64,7 +64,7 @@ function ProductList() {
             <p>Harga: <b>Rp{product.price}</b></p>
             <p>Stok: {product.stock}</p>
 
-            {/* ✏️ Tombol Edit */}
+            {/* Tombol Edit */}
             <button
               className="bg-yellow-500 text-white py-1 px-3 rounded mr-2"
               onClick={() => handleEdit(product)}
@@ -72,7 +72,7 @@ function ProductList() {
               Edit
             </button>
 
-            {/* 🗑️ Tombol Hapus */}
+            {/* Tombol Hapus */}
             <button
               className="bg-red-500 text-white py-1 px-3 rounded"
               onClick={() => deleteProduct(product._id)}
