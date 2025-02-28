@@ -6,8 +6,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminLayout from "./components/AdminLayout";
 
-// Protected Route untuk mencegah akses tanpa login
+// Protected Route untuk akses login
 const PrivateRoute = ({ element }) => {
   const { user } = useContext(AuthContext);
   return user ? element : <Navigate to="/login" />;
@@ -21,19 +22,26 @@ const RedirectIfLoggedIn = ({ element }) => {
 
 function App() {
   return (
-      <Router>
-        <AuthProvider>        
-          <Routes>
+    <Router>
+        <AuthProvider>
+        <Routes>
+          {/* Halaman Login & Register */}
           <Route path="/login" element={<RedirectIfLoggedIn element={<Login />} />} />
           <Route path="/register" element={<RedirectIfLoggedIn element={<Register />} />} />
 
-          {/* Proteksi route biar ga bisa diakses tanpa login */}
+          {/* Halaman User */}
           <Route path="/user/dashboard" element={<PrivateRoute element={<UserDashboard />} />} />
-          <Route path="/admin/dashboard" element={<PrivateRoute element={<AdminDashboard />} />} />
 
+          {/* Halaman Admin menggunakan AdminLayout */}
+          <Route
+            path="/admin/dashboard"
+            element={<PrivateRoute element={<AdminLayout><AdminDashboard /></AdminLayout>} />}
+          />
+
+          {/* Redirect ke login jika tidak cocok */}
           <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </AuthProvider>
+        </Routes>
+    </AuthProvider>
       </Router>
   );
 }
