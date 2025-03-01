@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { useContext } from "react";
 import AuthContext from "./context/AuthContext";
@@ -11,56 +11,44 @@ import Account from "./pages/admin/Account";
 import AdminLayout from "./components/AdminLayout";
 import ProductList from "./pages/admin/ProductList";
 
-// Protected Route untuk halaman yang membutuhkan login
-const PrivateRoute = ({ children }) => {
+// Protected Route untuk akses login
+const PrivateRoute = ({ element }) => {
   const { user } = useContext(AuthContext);
-  return user ? children : <Navigate to="/login" />;
+  return user ? element : <Navigate to="/login" />;
 };
 
-// Redirect jika pengguna sudah login
-const RedirectIfLoggedIn = ({ children }) => {
+// Redirect jika sudah login
+const RedirectIfLoggedIn = ({ element }) => {
   const { user } = useContext(AuthContext);
-  if (user) {
-    return <Navigate to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"} />;
-  }
-  return children;
-};
-
-//  Wrapper untuk halaman admin (harus login & admin)
-const AdminRoute = () => {
-  const { user } = useContext(AuthContext);
-  if (!user || user.role !== "admin") {
-    return <Navigate to="/login" />;
-  }
-  return <Outlet />;
+  return user ? <Navigate to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"} /> : element;
 };
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    
+    <Router>
+      <AuthProvider>
         <Routes>
           {/* Halaman Login & Register */}
-          <Route path="/login" element={<RedirectIfLoggedIn><Login /></RedirectIfLoggedIn>} />
-          <Route path="/register" element={<RedirectIfLoggedIn><Register /></RedirectIfLoggedIn>} />
+          <Route path="/login" element={<RedirectIfLoggedIn element={<Login />} />} />
+          <Route path="/register" element={<RedirectIfLoggedIn element={<Register />} />} />
 
           {/* Halaman User */}
-          <Route path="/user/dashboard" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
+          <Route path="/user/dashboard" element={<PrivateRoute element={<UserDashboard />} />} />
 
           {/* Halaman Admin */}
-          <Route path="/admin" element={<AdminRoute />}>
-            <Route path="" element={<AdminLayout />} />
+          <Route path="/admin" element={<PrivateRoute element={<AdminLayout />} />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="produk" element={<ProductList />} />
             <Route path="orders" element={<Orders />} />
             <Route path="account" element={<Account />} />
           </Route>
 
-          {/* Redirect jika route tidak ditemukan */}
+          {/* Redirect ke login jika tidak cocok */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

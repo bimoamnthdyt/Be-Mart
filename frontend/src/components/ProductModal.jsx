@@ -1,117 +1,129 @@
 import { useState, useEffect } from "react";
 
-const categories = ["Elektronik", "Pakaian", "Makanan", "Minuman", "Perabotan"];
-
 const ProductModal = ({ product, isOpen, onClose, onSave }) => {
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState(categories[0]); 
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    stock: "",
+    description: "",
+    category: "",
+  });
 
+  const [errors, setErrors] = useState({});
+
+  // Set data saat edit produk
   useEffect(() => {
     if (product) {
-      setName(product.name);
-      setPrice(product.price);
-      setStock(product.stock);
-      setDescription(product.description || "");
-      setCategory(product.category || categories[0]);
+      setFormData(product);
     } else {
-      setName("");
-      setPrice("");
-      setStock("");
-      setDescription("");
-      setCategory(categories[0]);
+      setFormData({ name: "", price: "", stock: "", description: "", category: "" });
     }
   }, [product]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave({ name, price, stock, description, category }); // Kirim data yang diperbarui
+  // Fungsi validasi
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!formData.name.trim()) newErrors.name = "Nama produk tidak boleh kosong!";
+    if (!formData.price || isNaN(formData.price) || formData.price <= 0)
+      newErrors.price = "Harga harus angka dan tidak kosong !";
+    if (!formData.stock || isNaN(formData.stock) || formData.stock < 0)
+      newErrors.stock = "Stok harus angka 0 atau lebih!";
+    if (!formData.description.trim() || formData.description.length < 5)
+      newErrors.description = "Deskripsi minimal 5 karakter!";
+    if (!formData.category.trim()) newErrors.category = "Pilih kategori produk!";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true jika tidak ada error
   };
 
-  if (!isOpen) return null; // Jangan tampilkan modal jika tidak dibuka
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onSave(formData);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-      <h2 className="text-xl font-bold mb-4">
-        {product ? "Edit Produk" : "Tambah Produk"}
-      </h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-2">
-          <label className="block text-sm font-medium">Nama Produk</label>
-          <input
-            type="text"
-            className="w-full border p-2 rounded"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-2">
-          <label className="block text-sm font-medium">Harga</label>
-          <input
-            type="number"
-            className="w-full border p-2 rounded"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-2">
-          <label className="block text-sm font-medium">Stok</label>
-          <input
-            type="number"
-            className="w-full border p-2 rounded"
-            value={stock}
-            onChange={(e) => setStock(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-2">
-            <label className="block text-sm font-medium">Deskripsi</label>
-            <textarea
-              className="w-full border p-2 rounded"
-              rows="3"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Kategori</label>
-          <select
-            className="w-full border p-2 rounded"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
+    isOpen && (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white p-6 rounded-lg w-96">
+          <h2 className="text-xl font-bold mb-4">{product ? "Edit Produk" : "Tambah Produk"}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="block text-sm font-semibold">Nama Produk</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full p-2 border rounded"
+              />
+              {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+            </div>
 
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600"
-            onClick={onClose}
-          >
-            Batal
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Simpan
-          </button>
+            <div className="mb-3">
+              <label className="block text-sm font-semibold">Harga</label>
+              <input
+                type="number"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                className="w-full p-2 border rounded"
+              />
+              {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-semibold">Stok</label>
+              <input
+                type="number"
+                value={formData.stock}
+                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                className="w-full p-2 border rounded"
+              />
+              {errors.stock && <p className="text-red-500 text-sm">{errors.stock}</p>}
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-semibold">Deskripsi</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="w-full p-2 border rounded"
+              />
+              {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-semibold">Kategori</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="Ikan dan Daging">Ikan dan Daging</option>
+                <option value="Buah Buahan">Buah-buahan</option>
+                <option value="Minuman">Minuman</option>
+                <option value="Makanan Segar">Makanan segar</option>
+                <option value="Makanan Siap Saji">Makanan siap saji</option>
+                <option value="Barang Rumah Tangga">Barang rumah tangga</option>
+                <option value="Produk Kecantikan">Produk kecantikan</option>
+              </select>
+              {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button type="button" onClick={onClose} className="mr-2 bg-gray-500 text-white px-4 py-2 rounded">
+                Batal
+              </button>
+              <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                Simpan
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
+    )
   );
 };
 
