@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authroutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const userRoutes  = require("./routes/userRoutes");
 
 const app = express();
 
@@ -16,8 +17,11 @@ app.use(cors());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes); 
-app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes );
+
+app.use("/api/cart", cartRoutes);
+
 
 // Koneksi ke MongoDB
 mongoose.connect(process.env.MONGO_URI, {

@@ -24,16 +24,26 @@ const getProductById = async (req, res) => {
     }
   };
   
-  // Tambah produk (Hanya Admin)
-  const createProduct = async (req, res) => {
+  const createProduct = async (req, res) => {  
     try {
-      const newProduct = new Product(req.body);
+      const { name,  price, stock, description, category } = req.body;
+  
+      // Cek semua field dikirim
+      if (!name || !price || !stock || !description || !category) {
+        return res.status(400).json({ message: "Semua field wajib diisi" });
+      }
+  
+      // Simpan produk ke database
+      const newProduct = new Product({ name, price, stock, description, category });
       await newProduct.save();
-      res.json({ message: "Produk berhasil ditambahkan!", product: newProduct });
+  
+      res.status(201).json(newProduct);
     } catch (error) {
-      res.status(500).json({ message: "Gagal menambahkan produk!", error: error.message });
+      console.error("Error di server:", error);
+      res.status(500).json({ message: "Terjadi kesalahan server" });
     }
   };
+  
   
   // Edit produk (Hanya Admin)
   const updateProduct = async (req, res) => {

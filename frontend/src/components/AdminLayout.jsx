@@ -1,13 +1,13 @@
 import AdminSidebar from "./AdminSidebar";
+import {Outlet} from "react-router-dom";
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = () => {
   return (
-    <div className="flex">
-      {/*Sidebar di kiri */}
+    <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
-
-      {/*Konten halaman admin */}
-      <div className="pl-40 p-6 w-full max-w-4xl">{children}</div>
+      <div className="flex-1 p-6 ml-60">
+        <Outlet/>
+      </div>
     </div>
   );
 };

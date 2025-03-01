@@ -3,37 +3,57 @@ import AuthContext from "../context/AuthContext";
 import { useContext } from "react";
 
 const AdminSidebar = () => {
-  const {logout} = useContext(AuthContext);
-    return (
-      <div className="h-scree w-64 bg-blue-400 text-white fixed top-0 left-0 p-5">
-        <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
-        <ul>
-          <li className="mb-2">
-            <NavLink to="/admin/dashboard" className="block py-2 px-4 rounded hover:bg-gray-500">
-              Dashboard
-            </NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/admin/orders" className="block py-2 px-4 rounded hover:bg-gray-500">
-              Kelola Pesanan
-            </NavLink>
-          </li>
-          <li className="mb-2">
-            <NavLink to="/admin/produk" className="block py-2 px-4 rounded hover:bg-gray-500">
-              Kelola Produk
-            </NavLink>
-          </li>
-          <li className="mt-6">
-            <button
-              onClick={logout} // Logout langsung memanggil fungsi logout
-              className="block w-full text-center py-2 px-4 rounded-3xl bg-blue-600 hover:bg-blue-900"
-            >
-              Logout
-            </button>
-          </li>
-        </ul>
-      </div>
-    );
-  }
-  
-  export default AdminSidebar;
+  const { logout } = useContext(AuthContext);
+  return (
+    <div className="w-60 h-screen bg-blue-600 text-white fixed top-0 left-0 p-5 shadow-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center">Admin Panel</h2>
+      <ul className="space-y-2">
+        <li>
+          <NavLink
+            to="/admin/dashboard"
+            className={({ isActive}) => `block py-3 px-4 rounded-lg transition ${isActive ? "bg-blue-700" : ""}`}>
+              DASHBOARD
+          </NavLink>
+        </li>
+        <li>
+        <NavLink
+            to="/admin/produk"
+            className={({ isActive }) =>
+              `block py-3 px-4 rounded-lg transition ${isActive ? "bg-blue-700" : ""}`
+            }
+          >
+            PRODUK
+          </NavLink>
+        </li>
+        <li>
+        <NavLink
+          to="/admin/orders"
+          className={({ isActive }) =>
+            `block py-3 px-4 rounded-lg transition ${isActive ? "bg-blue-700" : ""}`
+          }
+        >
+          PESANAN
+        </NavLink>
+        </li>
+        <li>
+        <NavLink
+          to="/admin/account"
+          className={({ isActive }) =>
+            `block py-3 px-4 rounded-lg transition ${isActive ? "bg-blue-700" : ""}`
+          }
+        >
+          USER/ACCOUNT
+        </NavLink>
+        </li>
+      </ul>
+      <button
+        onClick={logout}
+        className="mt-10 w-full text-center py-3 px-4 rounded-lg bg-red-500 hover:bg-red-700 transition"
+      >
+        Logout
+      </button>
+    </div>
+  );
+};
+
+export default AdminSidebar;
