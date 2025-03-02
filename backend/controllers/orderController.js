@@ -94,5 +94,16 @@ const checkout = async (req, res) => {
     }
   };
 
+  //admin
+  const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find().populate("userId", "name email").sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: "Terjadi kesalahan", error: error.message });
+    }
+};
 
-  module.exports = {checkout, payOrder, getUserOrders, updateStatusPickup};
+
+
+  module.exports = {checkout, payOrder, getUserOrders, updateStatusPickup, getAllOrders};

@@ -40,7 +40,7 @@ function App() {
           <Route path="/admin" element={<PrivateRoute element={<AdminLayout />} />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="produk" element={<ProductList />} />
-            <Route path="orders" element={<Orders />} />
+            <Route path="orders" element={<Orders/>} />
             <Route path="account" element={<Account />} />
           </Route>
 
