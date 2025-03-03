@@ -11,7 +11,6 @@ const Account = () => {
   const [notification, setNotification] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [visiblePasswords, setVisiblePasswords] = useState({});
 
   // Fungsi notifikasi
   const showNotification = (message, type = "success") => {
@@ -79,28 +78,25 @@ const Account = () => {
   const handleSaveEdit = async (updatedUser) => {
     try {
       const token = localStorage.getItem("token");
+  
       await axios.put(
         `http://localhost:5000/api/users/${editingUser._id}`,
-        updatedUser,
+        {
+          name: editingUser.name,
+          email: editingUser.email,
+          role: editingUser.role, // Jangan kirim password!
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+  
       showNotification("User berhasil diperbarui!", "success");
-      setIsModalOpen(false);
-      setEditingUser(null);
-      fetchUsers();
     } catch (err) {
       showNotification("Gagal mengupdate user.", "error");
     }
   };
 
-  const togglePasswordVisibility  = (userId) => {
-    setVisiblePasswords((prev) => ({
-      ...prev,
-      [userId]: !prev[userId],
-    }))
-  }
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg overflow-x-auto">
@@ -166,14 +162,14 @@ const Account = () => {
                     onClick={() => handleEditClick(user)}
                     className="bg-cyan-900 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 transition duration-300 shadow-md"
                   >
-                    ✏️ Edit
+                    ✏️
                   </button>
 
                   <button
                     onClick={() => deleteUser(user._id)}
                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300 shadow-md"
                   >
-                    🗑️ Hapus
+                    🗑️
                   </button>
                 </td>
               </tr>
@@ -185,20 +181,26 @@ const Account = () => {
       {/* Modal Edit User */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg">
+          <div className="bg-white p-6 rounded-lg w-96">
             <h3 className="text-xl font-bold mb-4">Edit User</h3>
+
+            {/* Input Nama */}
             <input
               type="text"
               value={editingUser?.name}
               onChange={(e) => setEditingUser({ ...editingUser, name: e.target.value })}
               className="p-2 border rounded w-full mb-2"
             />
+
+            {/* Input Email */}
             <input
               type="email"
               value={editingUser?.email}
               onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
               className="p-2 border rounded w-full mb-2"
             />
+
+            {/* Pilihan Role */}
             <select
               value={editingUser?.role}
               onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
@@ -207,8 +209,20 @@ const Account = () => {
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
-            <button onClick={() => handleSaveEdit(editingUser)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Simpan</button>
-            <button onClick={() => setIsModalOpen(false)} className="ml-2 bg-gray-500 text-white px-4 py-2 rounded-lg">Batal</button>
+
+            {/* Tombol Simpan dan Batal */}
+            <button
+              onClick={() => handleSaveEdit(editingUser)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full mb-2"
+            >
+              Simpan
+            </button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg w-full"
+            >
+              Batal
+            </button>
           </div>
         </div>
       )}

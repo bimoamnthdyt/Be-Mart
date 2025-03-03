@@ -12,7 +12,6 @@ const register = async (req, res) => {
         const cekEmail = await User.findOne({email});
         if(cekEmail) return res.status(400).json({message: "Email sudah digunakan!"});
 
-        //hash password 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         //simpen user baru 
@@ -30,7 +29,7 @@ const login = async (req, res) => {
     try {
         const {email, password} = req.body;
 
-        //cek apakah user ada 
+        //cek user 
         const user = await User.findOne({email: req.body.email});
         if(!user) return res.status(400).json({message: "User tidak ditemukan"});
 

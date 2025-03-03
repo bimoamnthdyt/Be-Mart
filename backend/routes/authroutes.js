@@ -11,7 +11,7 @@ router.get("/profile", authMiddleware, (req, res) => {
     res.json({ message: "Ini halaman profil", user: req.user });
 });
 
-// Verifikasi Token (Cek apakah token masih valid)
+// Verifikasi Token 
 router.get("/verify", authMiddleware, (req, res) => {
     res.json({ message: "Token valid", user: req.user });
 });

@@ -50,7 +50,7 @@ const getCart = async (req, res) => {
         return res.json({ message: "Keranjang kosong", items: [] });
       }
   
-      // Cek apakah produk masih ada di database
+      // Cek produk masih ada di database
       const updatedItems = [];
       for (const item of cart.items) {
         const product = await Product.findById(item.productId);
@@ -59,7 +59,7 @@ const getCart = async (req, res) => {
         }
       }
   
-      // Perbarui keranjang jika ada produk yang sudah dihapus dari database
+      // Perbarui keranjang klo ada produk
       if (updatedItems.length !== cart.items.length) {
         cart.items = updatedItems;
         await cart.save();
