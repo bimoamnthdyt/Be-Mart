@@ -5,7 +5,7 @@ import UserNavbar from "../../components/UserNavbar";
 const CartPage = () => {
   const [cart, setCart] = useState([]);
 
-  // ✅ Ambil data keranjang dari backend
+  // Ambil data keranjang dari backend
   const fetchCart = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -18,12 +18,11 @@ const CartPage = () => {
     }
   };
 
-  // ✅ Panggil fetchCart() saat komponen pertama kali dimuat
   useEffect(() => {
     fetchCart();
   }, []);
 
-  // ✅ Kurangi Qty
+  // Kuranging Qty
   const kurangQuantity = async (productId, quantity) => {
     if (quantity === 1) {
       removeItem(productId);
@@ -36,20 +35,20 @@ const CartPage = () => {
         { quantity: quantity - 1 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchCart(); // ✅ Perbarui data setelah perubahan
+      fetchCart(); // Perbarui data setelah perubahan
     } catch (error) {
       console.error("Gagal mengurangi jumlah produk", error);
     }
   };
 
-  // ✅ Hapus produk dari keranjang
+  // Hapus produk dari keranjang
   const removeItem = async (productId) => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`/api/cart/remove/${productId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchCart(); // ✅ Perbarui data setelah produk dihapus
+      fetchCart();
     } catch (error) {
       console.error("Gagal menghapus produk", error);
     }

@@ -84,7 +84,7 @@ const Account = () => {
         {
           name: editingUser.name,
           email: editingUser.email,
-          role: editingUser.role, // Jangan kirim password!
+          role: editingUser.role,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
