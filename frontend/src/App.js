@@ -1,15 +1,22 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { useContext } from "react";
+import { useState } from "react";
 import AuthContext from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import UserDashboard from "./pages/user/UserDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Orders from "./pages/admin/Orders";
 import Account from "./pages/admin/Account";
 import AdminLayout from "./components/AdminLayout";
 import ProductList from "./pages/admin/ProductList";
+
+
+import UserDashboard from "./pages/user/UserDashboard";
+import CartPage from "./pages/user/CartPage";
+import OrderHistory from "./pages/user/OrderHistory";
+
+
 
 // Protected Route untuk akses login
 const PrivateRoute = ({ element }) => {
@@ -34,7 +41,9 @@ function App() {
           <Route path="/register" element={<RedirectIfLoggedIn element={<Register />} />} />
 
           {/* Halaman User */}
-          <Route path="/user/dashboard" element={<PrivateRoute element={<UserDashboard />} />} />
+          <Route path="/user/dashboard" element={<PrivateRoute element={<UserDashboard/>} />} />
+          <Route path="/user/cart" element={<PrivateRoute element={<CartPage />} />} />
+          <Route path="/user/orders" element={<PrivateRoute element={<OrderHistory />} />} />
 
           {/* Halaman Admin */}
           <Route path="/admin" element={<PrivateRoute element={<AdminLayout />} />}>

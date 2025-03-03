@@ -1,9 +1,9 @@
 import { createContext, useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const AuthContext   = createContext();
+const AuthContext = createContext();
 
-export const AuthProvider = ({children }) => {
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("token") || "");
     const navigate = useNavigate();
@@ -30,12 +30,10 @@ export const AuthProvider = ({children }) => {
                     localStorage.removeItem("user");
                 }
             }
-            
         };
 
         checkAuth();
     }, [token]);
-
 
     const login = (userData, token) => {
         setUser(userData);
@@ -43,7 +41,7 @@ export const AuthProvider = ({children }) => {
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
 
-        if(userData.role === "admin") {
+        if (userData.role === "admin") {
             navigate("/admin/dashboard");
         } else {
             navigate("/user/dashboard");
@@ -51,28 +49,28 @@ export const AuthProvider = ({children }) => {
     };
 
     const logout = async () => {
-    setUser(null);
-    setToken("");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+        setUser(null);
+        setToken("");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
 
-    try {
-        await fetch("http://localhost:5000/api/auth/logout", {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-        });
-    } catch (error) {
-        console.error("Logout error:", error);
-    }
+        try {
+            await fetch("http://localhost:5000/api/auth/logout", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
 
-    navigate("/login");
-};
+        navigate("/login");
+    };
 
     return (
-        <AuthContext.Provider value={{user, token, login, logout}}>
-             {children}
+        <AuthContext.Provider value={{ user, setUser, token, setToken, login, logout }}>
+            {children}
         </AuthContext.Provider>
     );
-}
+};
 
 export default AuthContext;
