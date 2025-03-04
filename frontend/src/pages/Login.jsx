@@ -34,7 +34,7 @@ const Login = () => {
                 <input type="email" placeholder="Email" className="w-full p-2 border rounded mb-2" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <input type="password" placeholder="Password" className="w-full p-2 border rounded mb-2" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Login</button>
-                <p className="mt-2 text-sm">Belum punya akun? <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/register")}>Daftar</span></p>
+                <p className="mt-2 text-sm">No account yet? <span className="text-blue-500 cursor-pointer" onClick={() => navigate("/register")}>Register</span></p>
             </form>
         </div>
     );

@@ -10,18 +10,18 @@ export const AuthProvider = ({ children }) => {
     });
     
     const [token, setToken] = useState(localStorage.getItem("token") || "");
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState([]); 
     const [totalPrice, setTotalPrice] = useState(0);
     const navigate = useNavigate();
 
-    // Mencegat request ganda
+    // Mencegah request ganda
     const didCheckAuth = useRef(false); 
-    const didFetchCart = useRef(false);
+    // const didFetchCart = useRef(false);
 
     useEffect(() => {
         const checkAuth = async () => {
             if (!didCheckAuth.current && token) {
-                didCheckAuth.current = true; // Cegat request ulang
+                didCheckAuth.current = true;
 
                 try {
                     const response = await fetch("http://localhost:5000/api/auth/verify", {
@@ -47,22 +47,20 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, [token]);
 
+    //Fungsi Fetch Data Cart
     const fetchCart = async () => {
-        if (!didFetchCart.current) {
-            didFetchCart.current = true; // Cegah request ulang
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) return;
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-                const { data } = await axios.get("http://localhost:5000/api/cart", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+            const { data } = await axios.get("http://localhost:5000/api/cart", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-                setCart(data.items || []);
-                setTotalPrice(data.totalPrice || 0);
-            } catch (error) {
-                console.error("Gagal mengambil data keranjang", error);
-            }
+            setCart(data.items || []);
+            setTotalPrice(data.totalPrice || 0);
+        } catch (error) {
+            console.error("Gagal mengambil data keranjang", error);
         }
     };
 
@@ -91,6 +89,8 @@ export const AuthProvider = ({ children }) => {
 
         setUser(null);
         setToken("");
+        setCart([]); 
+        setTotalPrice(0);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
 
@@ -98,7 +98,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, setUser, token, setToken, cart, setCart, login, logout }}>
+        <AuthContext.Provider value={{ 
+            user, setUser, 
+            token, setToken, 
+            cart, setCart, 
+            totalPrice, setTotalPrice, 
+            fetchCart, 
+            login, logout 
+        }}>
             {children}
         </AuthContext.Provider>
     );

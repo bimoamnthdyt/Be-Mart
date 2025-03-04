@@ -5,7 +5,6 @@ import UserNavbar from "../../components/UserNavbar";
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const didFetchOrders = useRef(false); // Mencegah request ganda
-  const CACHE_DURATION = 3 * 60 * 1000; 
 
   const fetchOrders = async () => {
     try {
@@ -14,9 +13,7 @@ const OrderHistory = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      localStorage.setItem("orders", JSON.stringify(data)); // Simpan data di cache
-      localStorage.setItem("orders_cache_time", Date.now()); // Simpan waktu penyimpanan cache
-      setOrders(data);
+      setOrders(data); 
     } catch (error) {
       console.error("Gagal mengambil riwayat pesanan", error);
     }
@@ -24,19 +21,8 @@ const OrderHistory = () => {
 
   useEffect(() => {
     if (!didFetchOrders.current) {
-      didFetchOrders.current = true; // Pastikan hanya fetch sekali
-
-      const cachedOrders = JSON.parse(localStorage.getItem("orders"));
-      const cacheTime = localStorage.getItem("orders_cache_time");
-
-      // Periksa apakah cache masih berlaku
-      if (cachedOrders && cacheTime && Date.now() - cacheTime < CACHE_DURATION) {
-        console.log("Menggunakan data dari cache");
-        setOrders(cachedOrders); // Gunakan data dari cache
-      } else {
-        console.log("Cache expired, mengambil data baru");
-        fetchOrders(); // Ambil data baru jika cache sudah kadaluarsa
-      }
+      didFetchOrders.current = true; 
+      fetchOrders(); 
     }
   }, []);
 
@@ -53,24 +39,24 @@ const OrderHistory = () => {
       <UserNavbar />
       <div className="p-6 max-w-4xl mx-auto">
         <h4 className="md:text-2xl text-center font-extrabold text-gray-800 mb-6">
-          Riwayat Pesanan Anda
+         Order History
         </h4>
 
         {orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-gray-500 mt-10">
-            <p className="text-lg font-semibold">Riwayat Pesanan kosong</p>
-            <p className="text-sm">Yuk lakukan checkout produk impian kamu!</p>
+            <p className="text-lg font-semibold">Empty Order History</p>
+            <p className="text-sm">Let's checkout your dream product!</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="p-3 border border-gray-300 text-center">Total Harga</th>
-                  <th className="p-3 border border-gray-300 text-center">Produk</th>
+                  <th className="p-3 border border-gray-300 text-center">Total Price</th>
+                  <th className="p-3 border border-gray-300 text-center">Product</th>
                   <th className="p-3 border border-gray-300 text-center">Status</th>
                   <th className="p-3 border border-gray-300 text-center">Pickup</th>
-                  <th className="p-3 border border-gray-300 text-center">Aksi</th>
+                  <th className="p-3 border border-gray-300 text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -86,7 +72,7 @@ const OrderHistory = () => {
                     <td className="p-3 border border-gray-300 text-center">{order.pickupStatus}</td>
                     <td className="p-3 border border-gray-300 text-center flex items-center justify-center gap-2">
                       <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        Detail Pesanan
+                        Detail Order
                       </button>
                     </td>
                   </tr>

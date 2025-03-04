@@ -10,16 +10,22 @@ const AdminSidebar = () => {
       <ul className="space-y-2">
         <li>
           <NavLink
-            to="/admin/dashboard"
-            className={({ isActive}) => `block py-3 px-4 rounded-lg transition ${isActive ? "bg-gray-700" : ""}`}>
-              DASHBOARD
-          </NavLink>
+        to="/admin/dashboard"
+        className={({ isActive }) =>
+          `block py-3 px-4 rounded-lg transition border-2 border-transparent ${
+            isActive ? "bg-gray-800 border-orange-600" : "hover:border-orange-500"
+          }`
+        }
+      >
+        DASHBOARD
+      </NavLink>
         </li>
         <li>
         <NavLink
             to="/admin/produk"
             className={({ isActive }) =>
-              `block py-3 px-4 rounded-lg transition ${isActive ? "bg-gray-700" : ""}`
+              `block py-3 px-4 rounded-lg transition border-2 border-transparent ${
+                isActive ? "bg-gray-800 border-orange-600" : "hover:border-orange-500"}`
             }
           >
             PRODUK
@@ -29,7 +35,8 @@ const AdminSidebar = () => {
         <NavLink
           to="/admin/orders"
           className={({ isActive }) =>
-            `block py-3 px-4 rounded-lg transition ${isActive ? "bg-gray-700" : ""}`
+            `block py-3 px-4 rounded-lg transition border-2 border-transparent ${
+              isActive ? "bg-gray-800 border-orange-600" : "hover:border-orange-500"}`
           }
         >
           PESANAN
@@ -39,7 +46,8 @@ const AdminSidebar = () => {
         <NavLink
           to="/admin/account"
           className={({ isActive }) =>
-            `block py-3 px-4 rounded-lg transition ${isActive ? "bg-gray-700" : ""}`
+            `block py-3 px-4 rounded-lg transition border-2 border-transparent ${
+              isActive ? "bg-gray-800 border-orange-600" : "hover:border-orange-500"}`
           }
         >
           USER/ACCOUNT
@@ -48,7 +56,7 @@ const AdminSidebar = () => {
       </ul>
       <button
         onClick={logout}
-        className="mt-10 w-full text-center py-3 px-4 rounded-lg bg-gray-900 hover:bg-red-700 transition"
+        className="mt-10 w-full text-center py-3 px-4 rounded-lg border-2 border-transparent hover:border-orange-500 transition"
       >
         Logout
       </button>

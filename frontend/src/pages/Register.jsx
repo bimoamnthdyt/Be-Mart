@@ -17,7 +17,7 @@ const Register = () => {
     });
 
     if (response.ok) {
-      alert("Registrasi berhasil! Silakan login.");
+      alert("Registration successful! Please login.");
       navigate("/login");
     } else {
       const data = await response.json();

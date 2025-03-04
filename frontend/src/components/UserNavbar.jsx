@@ -10,8 +10,7 @@ const UserNavbar = () => {
   });
 
   const navigate = useNavigate();
-  const didFetchCart = useRef(false); // Prevent duplicate fetch
-
+  const didFetchCart = useRef(false); 
   useEffect(() => {
     const fetchCartCount = async () => {
       try {
@@ -30,13 +29,13 @@ const UserNavbar = () => {
     };
 
     if (!didFetchCart.current) {
-      didFetchCart.current = true; // Pastikan hanya fetch sekali
+      didFetchCart.current = true;
       fetchCartCount();
     }
-  }, []); // Hanya dijalankan sekali saat komponen pertama kali dimuat
+  }, []); 
 
   return (
-    <nav className="bg-blue-500 text-white p-4 flex justify-between items-center">
+    <nav className="bg-gray-800 text-white p-5 flex justify-between items-center">
       <h1
         className="text-xl font-bold cursor-pointer"
         onClick={() => navigate(user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard")}
@@ -49,17 +48,24 @@ const UserNavbar = () => {
             Halo, <strong>{user.name}</strong>
           </p>
         )}
-        <Link to="/user/cart" className="bg-white text-blue-500 px-3 py-1 rounded">
+        <Link 
+          to="/user/cart" 
+          className="bg-white text-black px-3 py-1 rounded-2xl border-2 border-transparent hover:border-orange-500">
           🛒 
         </Link>
-        <Link to="/user/orders" className="bg-white text-blue-500 px-3 py-1 rounded">
-          📦 Pesanan
+        <Link 
+          to="/user/orders" 
+          className="bg-white text-gray-500 px-3 py-1 rounded-2xl border-2 border-transparent hover:border-orange-500">
+          📦 Orders
         </Link>
-        <button onClick={logout} className="bg-red-500 px-3 py-1 rounded hover:bg-red-700">
-          Keluar
+        <button 
+          onClick={logout} 
+          className="px-3 py-1 rounded-xl border-2 border-transparent hover:border-orange-500">
+          Log out
         </button>
       </div>
     </nav>
+
   );
 };
 

@@ -1,9 +1,13 @@
-import { useContext } from "react";
+import { useEffect, useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import UserNavbar from "../../components/UserNavbar";
 
 const CartPage = () => {
   const { cart, totalPrice, fetchCart } = useContext(AuthContext);
+
+  useEffect(() => {
+    fetchCart();
+  }, []); 
 
   // Kurangi Qty
   const kurangQuantity = async (productId, quantity) => {
@@ -21,7 +25,7 @@ const CartPage = () => {
         },
         body: JSON.stringify({ quantity: quantity - 1 }),
       });
-      fetchCart(); // Perbarui cart setelah mengurangi qty
+      fetchCart();
     } catch (error) {
       console.error("Gagal mengurangi jumlah produk", error);
     }
@@ -35,7 +39,7 @@ const CartPage = () => {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      fetchCart(); // Perbarui cart setelah menghapus produk
+      fetchCart();
     } catch (error) {
       console.error("Gagal menghapus produk", error);
     }
@@ -53,7 +57,7 @@ const CartPage = () => {
       const data = await response.json();
       if (response.ok) {
         alert("Checkout berhasil! " + (data.message || ""));
-        fetchCart(); // Kosongkan keranjang setelah checkout
+        fetchCart(); 
       } else {
         alert("Checkout gagal. Silakan coba lagi.");
       }
@@ -71,13 +75,13 @@ const CartPage = () => {
       <UserNavbar />
       <div className="p-6 max-w-4xl mx-auto">
         <h4 className="md:text-2xl text-center font-extrabold text-gray-800 mb-6">
-          Keranjang Anda
+          Shopping Cart
         </h4>
 
         {cart.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-gray-500 mt-10">
-            <p className="text-lg font-semibold">Keranjang kosong</p>
-            <p className="text-sm">Tambahkan beberapa produk untuk melanjutkan belanja!</p>
+            <p className="text-lg font-semibold">Empty cart</p>
+            <p className="text-sm">Add a few products to continue shopping!</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -103,15 +107,15 @@ const CartPage = () => {
                     <td className="p-3 border border-gray-300 text-center flex items-center justify-center gap-2">
                       <button
                         onClick={() => kurangQuantity(item.productId, item.quantity)}
-                        className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-700"
+                        className="bg-white text-black font-bold border-2 border-transparent px-2 py-1 rounded-xl hover:border-orange-500"
                       >
-                        ➖
+                        -
                       </button>
                       <button
                         onClick={() => removeItem(item.productId)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700"
+                        className="bg-white text-black border-2 border-transparent px-2 py-1 rounded-xl hover:border-orange-500"
                       >
-                        🗑️
+                        remove
                       </button>
                     </td>
                   </tr>
@@ -119,12 +123,14 @@ const CartPage = () => {
               </tbody>
             </table>
             <div className="mt-4 font-bold text-lg text-right">Total Harga: Rp {formatRupiah(totalPrice)}</div>
-            <button
-              onClick={handleCheckout}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4 w-full"
-            >
-              Checkout Sekarang
-            </button>
+            <div className="flex justify-end">
+              <button
+                onClick={handleCheckout}
+                className="bg-orange-400 text-white px-4 py-2 rounded mt-4"
+              >
+                Proceed to Checkout
+              </button>
+            </div>
           </div>
         )}
       </div>
