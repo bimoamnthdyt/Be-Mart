@@ -1,15 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import UserNavbar from "../../components/UserNavbar";
 
 const UserDashboard = () => {
   const [products, setProducts] = useState([]);
   const [quantities, setQuantities] = useState({});
+  const didFetchProducts = useRef(false); // Prevent duplicate fetch
 
-  // Ambil daftar produk dari backend
+  const CACHE_DURATION = 2 * 60 * 1000; // 2 menit
+
+  // Ambil daftar produk dari backend dengan caching & expired time
   const fetchProducts = async () => {
     try {
       const { data } = await axios.get("/api/products");
+
+      // Simpan ke localStorage dengan timestamp
+      localStorage.setItem("products", JSON.stringify(data));
+      localStorage.setItem("products_cache_time", Date.now()); // Simpan waktu penyimpanan
       setProducts(data);
     } catch (error) {
       console.error("Gagal mengambil produk", error);
@@ -17,21 +24,33 @@ const UserDashboard = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    if (!didFetchProducts.current) {
+      didFetchProducts.current = true; // mastiin fetch sekali
+
+      const cachedProducts = JSON.parse(localStorage.getItem("products"));
+      const cacheTime = localStorage.getItem("products_cache_time");
+
+      // Periksa apakah cache masih berlaku
+      if (cachedProducts && cacheTime && Date.now() - cacheTime < CACHE_DURATION) {
+        console.log("Menggunakan data dari cache");
+        setProducts(cachedProducts); // Gunakan data dari cache
+      } else {
+        console.log("Cache expired, mengambil data baru");
+        fetchProducts(); // Ambil data baru jika cache kadaluarsa
+      }
+    }
+  }, []); 
 
   // Tambahkan produk ke keranjang
   const addToCart = async (productId, stock) => {
-    const quantity = quantities[productId] || 1; // Ambil jumlah dari input, default 1
+    const quantity = quantities[productId] || 1;
     if (quantity > stock) {
       alert("Jumlah melebihi stok yang tersedia!");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
-      // console.log("Mengirim ke backend:", { productId, quantity });
-  
       await axios.post(
         "/api/cart/add",
         { productId, quantity },
@@ -68,7 +87,7 @@ const UserDashboard = () => {
             products.map((product) => (
               <div key={product._id} className="border p-4 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold">{product.name}</h2>
-                <p className="text-gray-700">Rp {product.price.toLocaleString("id-ID")}</p>
+                <p className="text-gray-700">Rp {formatRupiah(product.price)}</p>
                 <p className="text-gray-500 text-sm">Stok: {product.stock}</p>
 
                 {/* Input jumlah barang */}

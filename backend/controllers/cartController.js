@@ -42,6 +42,7 @@ const addToCart = async (req, res) => {
 };
 
 
+
 // get isi keranjang user 
 const getCart = async (req, res) => {
   try {
@@ -49,27 +50,33 @@ const getCart = async (req, res) => {
     const cart = await Cart.findOne({ userId }).populate("items.productId");
 
     if (!cart || cart.items.length === 0) {
-      return res.json({ message: "Keranjang kosong", items: [] });
+      return res.json({ message: "Keranjang kosong", items: [], totalPrice: 0 });
     }
 
-    // Konversi hasil populate agar sesuai dengan frontend
+    let totalPrice = 0;
     const formattedCart = {
       _id: cart._id,
       userId: cart.userId,
-      items: cart.items.map((item) => ({
-        _id: item._id,
-        productId: item.productId._id,
-        name: item.productId.name,
-        price: item.productId.price,
-        quantity: item.quantity,
-      })),
+      items: cart.items.map((item) => {
+        const itemTotal = item.productId.price * item.quantity;
+        totalPrice += itemTotal;
+        return {
+          _id: item._id,
+          productId: item.productId._id,
+          name: item.productId.name,
+          price: item.productId.price,
+          quantity: item.quantity,
+          total: itemTotal, // Tambahkan total harga per item
+        };
+      }),
+      totalPrice, // Kirim total harga ke frontend
     };
 
     res.json(formattedCart);
   } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan", error: error.message });
   }
-};  
+}; 
 
 
   //Update Jumlah Produk di keranjang
@@ -119,4 +126,4 @@ const getCart = async (req, res) => {
     }
   };
 
-  module.exports = { addToCart, getCart, updateCartItem, removeCartItem };
+  module.exports = { addToCart, getCart, updateCartItem, removeCartItem};
