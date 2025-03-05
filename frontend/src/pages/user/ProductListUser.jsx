@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
+// import {useNavigate} from "react-router-dom";
 import axios from "axios";
 
 const ProductListUser = () => {
   const [products, setProducts] = useState([]);
   const [quantities, setQuantities] = useState({});
+  // const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // Fetch daftar produk dari backend
   const fetchProducts = async () => {
@@ -20,12 +23,17 @@ const ProductListUser = () => {
   }, []);
 
   // Tambahkan produk ke keranjang
-  const addToCart = async (productId, stock) => {
+  const addToCart = async (productId, stock, navigate) => {
     const quantity = quantities[productId] || 1;
+
     if (quantity > stock) {
       alert("Jumlah melebihi stok yang tersedia!");
       return;
     }
+     if (!token) {
+      alert("Silakan login terlebih dahulu untuk menambah ke keranjang.");
+      return;
+  }
 
     try {
       const token = localStorage.getItem("token");
