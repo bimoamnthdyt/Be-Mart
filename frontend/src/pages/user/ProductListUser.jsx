@@ -22,7 +22,7 @@ const ProductListUser = () => {
     fetchProducts();
   }, []);
 
-  // Tambahkan produk ke keranjang
+  // Tambahkan produk ke keranjang  
   const addToCart = async (productId, stock, navigate) => {
     const quantity = quantities[productId] || 1;
 
@@ -30,23 +30,24 @@ const ProductListUser = () => {
       alert("Jumlah melebihi stok yang tersedia!");
       return;
     }
-     if (!token) {
+    if (!token) {
       alert("Silakan login terlebih dahulu untuk menambah ke keranjang.");
       return;
-  }
+    }
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
+      const response = await axios.post(
         "/api/cart/add",
         { productId, quantity },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(`Produk (${quantity} item) successfully added to cart!`);
+      alert(`Produk (${quantity} item) berhasil ditambahkan ke keranjang!`);
     } catch (error) {
-      console.error("Failed to add to cart", error);
+      console.error("Gagal menambahkan ke keranjang", error);
     }
   };
+
 
   const formatRupiah = (angka) => {
     return angka.toLocaleString("id-ID");
@@ -69,28 +70,35 @@ const ProductListUser = () => {
           <p>Product unavailable</p>
         ) : (
           products.map((product) => (
-            <div key={product._id} className="border p-4 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold">{product.name}</h3>
+            <div key={product._id} className="border p-4 rounded-lg shadow-md flex flex-col items-center">
+              {product.image && (
+                <img
+                  src={`http://localhost:5000${product.image}`}
+                  alt={product.name}
+                  className="w-40 h-40 object-cover rounded-lg mb-2"
+                />
+              )}
+              <h3 className="text-lg font-semibold text-center">{product.name}</h3>
               <p className="text-gray-700">Rp {formatRupiah(product.price)}</p>
               <p className="text-gray-500 text-sm">Stok: {product.stock}</p>
 
               {/* Input jumlah barang */}
               <div className="flex items-center gap-2 mt-2">
-                  <input
-                    type="number"
-                    value={quantities[product._id] || 1}
-                    onChange={(e) => handleQuantityChange(product._id, e.target.value, product.stock)}
-                    className="border border-black rounded px-2 py-1 w-10 text-center"
-                    min="1"
-                    max={product.stock}
-                  />
-                  <button
-                    onClick={() => addToCart(product._id, product.stock)}
-                    className="bg-orange-400 text-white text-sm border-2 border-transparent px-3 py-1 rounded-lg"
-                  >
-                    Add to cart 
-                  </button>
-                </div>
+                <input
+                  type="number"
+                  value={quantities[product._id] || 1}
+                  onChange={(e) => handleQuantityChange(product._id, e.target.value, product.stock)}
+                  className="border border-black rounded px-2 py-1 w-10 text-center"
+                  min="1"
+                  max={product.stock}
+                />
+                <button
+                  onClick={() => addToCart(product._id, product.stock)}
+                  className="bg-orange-400 text-white text-sm border-2 border-transparent px-3 py-1 rounded-lg"
+                >
+                  Add to cart
+                </button>
+              </div>
             </div>
           ))
         )}

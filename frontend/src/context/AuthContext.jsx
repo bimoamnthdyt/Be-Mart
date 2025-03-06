@@ -55,20 +55,26 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, [token, logout]); 
 
-    const fetchCart = async () => {
+    const fetchCart = useCallback(async () => {
         try {
+            const token = localStorage.getItem("token");
             if (!token) return;
-
-            const { data } = await axios.get("http://localhost:5000/api/cart", {
+    
+            const response = await fetch("http://localhost:5000/api/cart", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-
-            setCart(data.items || []);
+    
+            const data = await response.json();
+            console.log("Fetched Cart Data:", data);
+    
+            setCart(data || { items: [] });
             setTotalPrice(data.totalPrice || 0);
         } catch (error) {
-            console.error("Gagal mengambil data keranjang", error);
+            console.error("Error fetching cart:", error);
+            setCart({ items: [] });
+            setTotalPrice(0);
         }
-    };
+    }, [setCart, setTotalPrice]); 
 
     const login = (userData, token) => {
         setUser(userData);

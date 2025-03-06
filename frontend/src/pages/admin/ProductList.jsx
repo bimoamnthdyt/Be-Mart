@@ -62,7 +62,10 @@ const ProductList = () => {
 
     try {
       const response = await axios.post("http://localhost:5000/api/products", newProduct, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data", 
+        },
       });
 
       if (response.status === 201) {
@@ -73,9 +76,9 @@ const ProductList = () => {
         throw new Error("Server tidak mengembalikan status 201");
       }
     } catch (err) {
-      showNotification(`Gagal menambahkan produk: ${err.message}`, "error");
+      showNotification(`Gagal menambahkan produk: ${err.response?.data?.message || err.message}`, "error");
     }
-  };
+};
 
   // Edit produk
   const handleEditClick = (product) => {
@@ -193,7 +196,12 @@ const ProductList = () => {
           <tbody>
             {filteredProducts.map((product) => (
               <tr key={product._id} className="border hover:bg-gray-100">
-                <td className="border p-2">{product.name}</td>
+                <td className="border p-2 flex items-center">
+                  {product.image && (
+                    <img src={`http://localhost:5000${product.image}`} alt={product.name} className="w-12 h-12 mr-2 object-cover" />
+                  )}
+                  {product.name}
+                </td>
                 <td className="border p-2">Rp.{product.price}</td>
                 <td className="border p-2">{product.stock}</td>
                 <td className="border p-2">{product.description}</td>

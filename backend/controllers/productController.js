@@ -30,36 +30,45 @@ const getProductById = async (req, res) => {
   
   const createProduct = async (req, res) => {  
     try {
-      const { name,  price, stock, description, category } = req.body;
-  
-      // Cek semua field dikirim
-      if (!name || !price || !stock || !description || !category) {
-        return res.status(400).json({ message: "Semua field wajib diisi" });
-      }
-  
-      // Simpan produk ke database
-      const newProduct = new Product({ name, price, stock, description, category });
-      await newProduct.save();
-  
-      res.status(201).json(newProduct);
+        const { name, price, stock, description, category } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+        if (!name || !price || !stock || !description || !category) {
+            return res.status(400).json({ message: "Semua field wajib diisi" });
+        }
+
+        const newProduct = new Product({ name, price, stock, description, category, image });
+        await newProduct.save();
+
+        res.status(201).json(newProduct);
     } catch (error) {
-      console.error("Error di server:", error);
-      res.status(500).json({ message: "Terjadi kesalahan server" });
+        console.error("Error di server:", error);
+        res.status(500).json({ message: "Terjadi kesalahan server" });
     }
-  };
+};
   
   
   // Edit produk (Hanya Admin)
   const updateProduct = async (req, res) => {
-    try {
-      const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      if (!updatedProduct) {
-        return res.status(404).json({ message: "Produk tidak ditemukan!" });
+      try {
+          const { name, price, stock, description, category } = req.body;
+          let image = req.file ? `/uploads/${req.file.filename}` : req.body.image; // Update gambar jika ada
+
+          const updatedProduct = await Product.findByIdAndUpdate(
+              req.params.id,
+              { name, price, stock, description, category, image },
+              { new: true }
+          );
+
+          if (!updatedProduct) {
+              return res.status(404).json({ message: "Produk tidak ditemukan" });
+          }
+
+          res.json(updatedProduct);
+      } catch (error) {
+          console.error("Error di server:", error);
+          res.status(500).json({ message: "Terjadi kesalahan server" });
       }
-      res.json({ message: "Produk berhasil diperbarui!", product: updatedProduct });
-    } catch (error) {
-      res.status(500).json({ message: "Terjadi kesalahan server!", error: error.message });
-    }
   };
   
   // Hapus produk (Hanya Admin)

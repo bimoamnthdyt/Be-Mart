@@ -7,6 +7,8 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
     stock: "",
     description: "",
     category: "",
+    image: null, // Tambahkan state untuk gambar
+    imagePreview: null, // Simpan preview gambar untuk ditampilkan
   });
 
   const [errors, setErrors] = useState({});
@@ -14,11 +16,23 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
   // Set data saat edit produk
   useEffect(() => {
     if (product) {
-      setFormData(product);
+      setFormData({
+        ...product,
+        image: null, // Reset image jika sedang mengedit
+        imagePreview: product.image || null, // Jika ada gambar sebelumnya, tampilkan
+      });
     } else {
-      setFormData({ name: "", price: "", stock: "", description: "", category: "" });
+      setFormData({
+        name: "",
+        price: "",
+        stock: "",
+        description: "",
+        category: "",
+        image: null,
+        imagePreview: null,
+      });
     }
-  }, [product]);
+  }, [product, isOpen]);
 
   // Fungsi validasi
   const validateForm = () => {
@@ -26,21 +40,43 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
 
     if (!formData.name.trim()) newErrors.name = "Nama produk tidak boleh kosong!";
     if (!formData.price || isNaN(formData.price) || formData.price <= 0)
-      newErrors.price = "Harga harus angka dan tidak kosong !";
+      newErrors.price = "Harga harus angka dan tidak kosong!";
     if (!formData.stock || isNaN(formData.stock) || formData.stock < 0)
       newErrors.stock = "Stok harus angka 0 atau lebih!";
     if (!formData.description.trim() || formData.description.length < 5)
       newErrors.description = "Deskripsi minimal 5 karakter!";
     if (!formData.category.trim()) newErrors.category = "Pilih kategori produk!";
+    if (!formData.imagePreview) newErrors.image = "Harap unggah gambar produk!";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Return true jika tidak ada error
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSave(formData);
+      const productData = new FormData();
+      productData.append("name", formData.name);
+      productData.append("price", formData.price);
+      productData.append("stock", formData.stock);
+      productData.append("description", formData.description);
+      productData.append("category", formData.category);
+      if (formData.image) {
+        productData.append("image", formData.image);
+      }
+
+      onSave(productData);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({
+        ...formData,
+        image: file,
+        imagePreview: URL.createObjectURL(file), // Membuat preview gambar
+      });
     }
   };
 
@@ -91,6 +127,19 @@ const ProductModal = ({ product, isOpen, onClose, onSave }) => {
                 className="w-full p-2 border rounded"
               />
               {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-semibold">Upload Image</label>
+              <input type="file" accept="image/*" onChange={handleImageChange} />
+              {formData.imagePreview && (
+                <img
+                  src={formData.imagePreview}
+                  alt="Preview"
+                  className="mt-2 w-full h-32 object-cover border rounded"
+                />
+              )}
+              {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
             </div>
 
             <div className="mb-3">
